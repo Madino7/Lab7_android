@@ -30,11 +30,14 @@ public class LoginActivity extends AppCompatActivity {
             String savedPass = prefs.getString("Password", "");
 
             if (savedUser.equals(edUsername.getText().toString()) &&
-                savedPass.equals(edPassword.getText().toString())) {
+                    savedPass.equals(edPassword.getText().toString())) {
                 Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, WelcomeActivity.class));
+                finish();
             } else {
                 Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
             }
+
         });
 
         btnSignUp.setOnClickListener(view -> {
