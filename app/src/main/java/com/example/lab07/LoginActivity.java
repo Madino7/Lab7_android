@@ -31,22 +31,23 @@ public class LoginActivity extends AppCompatActivity {
             String savedUser = prefs.getString("Username", "");
             String savedPass = prefs.getString("Password", "");
 
-            String enteredUser = edUsername.getText().toString();
-            String enteredPass = edPassword.getText().toString();
+            String enteredUser = edUsername.getText().toString().trim();
+            String enteredPass = edPassword.getText().toString().trim();
 
             if (enteredUser.isEmpty() || enteredPass.isEmpty()) {
                 Toast.makeText(this, "Please enter username and password", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (savedUser.equals(enteredUser) && savedPass.equals(enteredPass)) {
-                saveLoginToFile(enteredUser);
-                Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, WelcomeActivity.class));
-                finish();
-            } else {
-                Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
+            if (!savedUser.equals(enteredUser) || !savedPass.equals(enteredPass)) {
+                Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            saveLoginToFile(enteredUser);
+            Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, WelcomeActivity.class));
+            finish();
         });
 
         btnSignUp.setOnClickListener(view -> {

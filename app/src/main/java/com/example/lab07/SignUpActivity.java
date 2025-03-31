@@ -24,19 +24,29 @@ public class SignUpActivity extends AppCompatActivity {
         btnCreateUser = findViewById(R.id.btn_create_user);
 
         btnCreateUser.setOnClickListener(view -> {
-            if (edPassword.getText().toString().equals(edConfirmPassword.getText().toString())) {
-                SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("Username", edUsername.getText().toString());
-                editor.putString("Password", edPassword.getText().toString());
-                editor.apply();
+            String username = edUsername.getText().toString().trim();
+            String password = edPassword.getText().toString().trim();
+            String confirmPassword = edConfirmPassword.getText().toString().trim();
 
-                Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
-            } else {
-                Toast.makeText(this, "Passwords do not match!", Toast.LENGTH_SHORT).show();
+            if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            if (!password.equals(confirmPassword)) {
+                Toast.makeText(this, "Passwords do not match!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("Username", username);
+            editor.putString("Password", password);
+            editor.apply();
+
+            Toast.makeText(this, "Account created successfully!", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
         });
     }
 }
