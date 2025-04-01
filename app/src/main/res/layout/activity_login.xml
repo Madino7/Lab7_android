@@ -9,14 +9,18 @@
         android:id="@+id/ed_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username"/>
+        android:hint="Username"
+        android:textColor="@color/textColor"
+        android:backgroundTint="@color/primary"/>
 
     <EditText
         android:id="@+id/ed_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
-        android:hint="Password"/>
+        android:hint="Password"
+        android:textColor="@color/textColor"
+        android:backgroundTint="@color/primary"/>
 
     <Button
         android:id="@+id/btn_login"

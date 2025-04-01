@@ -1,17 +1,20 @@
 package com.example.lab07;
 
-import android.content.Intent;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SignUpActivity extends AppCompatActivity {
     private EditText edUsername, edPassword, edConfirmPassword;
     private Button btnCreateUser;
-    private static final String PREF_NAME = "user_credentials";
+
+    private final String CREDENTIAL_SHARED_PREF = "our_shared_pref";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,30 +26,32 @@ public class SignUpActivity extends AppCompatActivity {
         edConfirmPassword = findViewById(R.id.ed_confirm_pwd);
         btnCreateUser = findViewById(R.id.btn_create_user);
 
-        btnCreateUser.setOnClickListener(view -> {
-            String username = edUsername.getText().toString().trim();
-            String password = edPassword.getText().toString().trim();
-            String confirmPassword = edConfirmPassword.getText().toString().trim();
+        btnCreateUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String strUsername = edUsername.getText().toString().trim();
+                String strPassword = edPassword.getText().toString().trim();
+                String strConfirmPassword = edConfirmPassword.getText().toString().trim();
 
-            if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
-                return;
+                if (strUsername.isEmpty() || strPassword.isEmpty() || strConfirmPassword.isEmpty()) {
+                    Toast.makeText(SignUpActivity.this, "Пожалуйста, заполните все поля!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (!strPassword.equals(strConfirmPassword)) {
+                    Toast.makeText(SignUpActivity.this, "Пароли не совпадают!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                SharedPreferences credentials = getSharedPreferences(CREDENTIAL_SHARED_PREF, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = credentials.edit();
+                editor.putString("Username", strUsername);
+                editor.putString("Password", strPassword);
+                editor.apply(); // Сохраняем данные
+
+                Toast.makeText(SignUpActivity.this, "Регистрация успешна!", Toast.LENGTH_SHORT).show();
+                finish(); // Закрываем активити
             }
-
-            if (!password.equals(confirmPassword)) {
-                Toast.makeText(this, "Passwords do not match!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("Username", username);
-            editor.putString("Password", password);
-            editor.apply();
-
-            Toast.makeText(this, "Account created successfully!", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
         });
     }
 }

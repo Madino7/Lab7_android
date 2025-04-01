@@ -3,12 +3,11 @@ package com.example.lab07;
 import android.os.Bundle;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import android.content.SharedPreferences;
 
 public class LoginHistoryActivity extends AppCompatActivity {
     private TextView historyText;
+    private static final String PREF_NAME = "user_credentials";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,18 +19,14 @@ public class LoginHistoryActivity extends AppCompatActivity {
     }
 
     private String readLoginHistory() {
-        StringBuilder history = new StringBuilder();
-        try {
-            FileInputStream fis = openFileInput("logins.txt");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                history.append(line).append("\n");
-            }
-            reader.close();
-        } catch (Exception e) {
-            history.append("No login history found.");
+        SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        long lastLoginTime = prefs.getLong("LastLoginTime", -1);
+        String lastLoginUser = prefs.getString("LastLoginUser", "No user");
+
+        if (lastLoginTime == -1) {
+            return "No login history found.";
+        } else {
+            return "Last login:\nUser: " + lastLoginUser + "\nTime: " + lastLoginTime;
         }
-        return history.toString();
     }
 }

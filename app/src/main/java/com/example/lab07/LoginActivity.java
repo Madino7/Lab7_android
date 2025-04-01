@@ -1,20 +1,21 @@
 package com.example.lab07;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText edUsername, edPassword;
     private Button btnLogin, btnSignUp;
-    private static final String PREF_NAME = "user_credentials";
-    private static final String FILE_NAME = "logins.txt";
+
+    private final String CREDENTIAL_SHARED_PREF = "our_shared_pref";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,43 +27,40 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btn_login);
         btnSignUp = findViewById(R.id.btn_signup);
 
-        btnLogin.setOnClickListener(view -> {
-            SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-            String savedUser = prefs.getString("Username", "");
-            String savedPass = prefs.getString("Password", "");
-
-            String enteredUser = edUsername.getText().toString().trim();
-            String enteredPass = edPassword.getText().toString().trim();
-
-            if (enteredUser.isEmpty() || enteredPass.isEmpty()) {
-                Toast.makeText(this, "Please enter username and password", Toast.LENGTH_SHORT).show();
-                return;
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+                startActivity(intent);
             }
-
-            if (!savedUser.equals(enteredUser) || !savedPass.equals(enteredPass)) {
-                Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            saveLoginToFile(enteredUser);
-            Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, WelcomeActivity.class));
-            finish();
         });
 
-        btnSignUp.setOnClickListener(view -> {
-            startActivity(new Intent(this, SignUpActivity.class));
-        });
-    }
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences credentials = getSharedPreferences(CREDENTIAL_SHARED_PREF, Context.MODE_PRIVATE);
+                String savedUsername = credentials.getString("Username", "");
+                String savedPassword = credentials.getString("Password", "");
 
-    private void saveLoginToFile(String username) {
-        try {
-            FileOutputStream fos = openFileOutput(FILE_NAME, MODE_APPEND);
-            String logEntry = username + " logged in\n";
-            fos.write(logEntry.getBytes());
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                String inputUsername = edUsername.getText().toString().trim();
+                String inputPassword = edPassword.getText().toString().trim();
+
+                if (inputUsername.isEmpty() || inputPassword.isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "Введите имя и пароль!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (savedUsername.isEmpty() || savedPassword.isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "Пользователь не зарегистрирован!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (savedUsername.equals(inputUsername) && savedPassword.equals(inputPassword)) {
+                    Toast.makeText(LoginActivity.this, "Вход успешен!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Неверный логин или пароль!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }
